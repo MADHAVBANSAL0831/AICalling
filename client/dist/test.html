@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Mazer Admin Dashboard</title>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.0/fullcalendar.min.css" />
+    <link rel="stylesheet" href="assets/css/bootstrap.css">
+    <link rel="stylesheet" href="assets/vendors/iconly/bold.css">
+    <link rel="stylesheet" href="assets/vendors/perfect-scrollbar/perfect-scrollbar.css">
+    <link rel="stylesheet" href="assets/vendors/bootstrap-icons/bootstrap-icons.css">
+    <link rel="stylesheet" href="assets/css/app.css">
+    <link rel="shortcut icon" href="assets/images/favicon.svg" type="image/x-icon">
+</head>
+
+<body>
+    <div id="app">
+        <div id="sidebar" class="active">
+            <div class="sidebar-wrapper active">
+                <div class="sidebar-header">
+                    <div class="d-flex justify-content-between">
+                        <div class="logo">
+                            <a href="index.html"><img src="assets/images/logo/logo.png" alt="Logo"></a>
+                        </div>
+                        <div class="toggler">
+                            <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="sidebar-menu">
+                    <ul class="menu">
+                        <!-- Menu Items Here -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div id="main">
+            <div id="calendar"></div> <!-- FullCalendar main container -->
+        </div>
+    </div>
+    <!-- Modal for event details -->
+<div id="eventModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Event Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="eventTitle"></p>
+                <p id="eventTime"></p>
+                <p id="eventLink"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.0/fullcalendar.min.js"></script>
+    <script src="assets/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script>
+       $(document).ready(function() {
+    $('#calendar').fullCalendar({
+        header: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'month,agendaWeek,agendaDay'
+        },
+        editable: true,
+        events: function(start, end, timezone, callback) {
+            $.ajax({
+                url: 'http://localhost:5001/events', // Update to match your backend endpoint
+                method: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    var events = response.map(function(event) {
+                        return {
+                            title: event.summary,
+                            start: event.start,
+                            end: event.end,
+                            description: event.description, // Include any additional data
+                            googleMeetLink: event.googleMeetLink // Include the Google Meet link
+                        };
+                    });
+                    callback(events);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching events:', error);
+                }
+            });
+        },
+        eventClick: function(event, jsEvent, view) {
+            // Set the event details in the modal
+            $('#eventTitle').text(event.title);
+            $('#eventTime').text('Start: ' + moment(event.start).format('MMMM Do YYYY, h:mm:ss a') +
+                ' - End: ' + moment(event.end).format('MMMM Do YYYY, h:mm:ss a'));
+            if (event.googleMeetLink) {
+                $('#eventLink').html('<a href="' + event.googleMeetLink + '" target="_blank">Join Google Meet</a>');
+            } else {
+                $('#eventLink').text('No Google Meet link available');
+            }
+
+            // Show the modal
+            $('#eventModal').modal('show');
+        }
+    });
+});
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Mazer Admin Dashboard</title>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/bootstrap.css">
+
+    <link rel="stylesheet" href="assets/vendors/iconly/bold.css">
+    <link rel="stylesheet" href="assets/vendors/perfect-scrollbar/perfect-scrollbar.css">
+    <link rel="stylesheet" href="assets/vendors/bootstrap-icons/bootstrap-icons.css">
+    <link rel="stylesheet" href="assets/css/app.css">
+    <link rel="shortcut icon" href="assets/images/favicon.svg" type="image/x-icon">
+</head>
+
+<body>
+    <div id="app">
+        <div id="sidebar" class="active">
+            <div class="sidebar-wrapper active">
+                <div class="sidebar-header">
+                    <div class="d-flex justify-content-between">
+                        <div class="logo">
+                            <a href="index.html"><img src="assets/images/logo/logo.png" alt="Logo" srcset=""></a>
+                        </div>
+                        <div class="toggler">
+                            <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="sidebar-menu">
+                    <ul class="menu">
+                        <li class="sidebar-title">Menu</li>
+                        <!-- Menu items here -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div id="main">
+            <header class="mb-3">
+                <a href="#" class="burger-btn d-block d-xl-none">
+                    <i class="bi bi-justify fs-3"></i>
+                </a>
+            </header>
+
+            <div class="page-heading">
+                <h3>Profile Statistics</h3>
+            </div>
+            <div class="page-content">
+                <section class="row">
+                    <!-- Content here -->
+                </section>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <h4>Visitors Profile</h4>
+        </div>
+        <div class="card-body">
+            <div id="chart-visitors-profile"></div> <!-- Container for ApexCharts bar chart -->
+        </div>
+    </div>
+    <script src="assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <script src="assets/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/vendors/apexcharts/apexcharts.js"></script>
+    <script src="assets/js/pages/dashboard.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script>
+        const options = {
+            method: 'GET',
+            headers: {
+                Authorization: 'Bearer 9f9ef4ba-5978-456f-a9b5-26bdde7d1ea2'
+            }
+        };
+
+        fetch('https://api.vapi.ai/call', options)
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.querySelector('#latest-calls-table');
+                const latestCalls = data.slice(0, 5); // Get only the latest 5 calls
+                let successfulCalls = 0;
+                let unsuccessfulCalls = 0;
+
+                latestCalls.forEach(call => {
+                    const row = document.createElement('tr');
+                    const endedAt = new Date(call.endedAt);
+                    const isValidDate = !isNaN(endedAt.getTime());
+
+                    // Count successful and unsuccessful calls
+                    if (isValidDate) {
+                        successfulCalls++;
+                    } else {
+                        unsuccessfulCalls++;
+                    }
+
+                    row.innerHTML = `
+                        <td class="col-3">
+                            <div class="d-flex align-items-center">
+                                <p class="font-bold ms-3 mb-0">${new Date(call.createdAt).toLocaleString()}</p>
+                            </div>
+                        </td>
+                        <td class="col-auto">
+                            <p class=" mb-0">${new Date(call.endedAt).toLocaleString()}</p>
+                        </td>
+                        <td class="col-auto">
+                            <p class=" mb-0">${call.phoneCallProvider}</p>
+                        </td>
+                        <td class="col-auto">
+                            <p class=" mb-0">${call.status}</p>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+
+                // Render bar chart
+                var options = {
+                    series: [{
+                        data: [successfulCalls, unsuccessfulCalls]
+                    }],
+                    chart: {
+                        type: 'bar',
+                        height: 350
+                    },
+                    plotOptions: {
+                        bar: {
+                            horizontal: false,
+                            columnWidth: '55%',
+                            endingShape: 'rounded'
+                        },
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    stroke: {
+                        show: true,
+                        width: 2,
+                        colors: ['transparent']
+                    },
+                    xaxis: {
+                        categories: ['Successful Calls', 'Unsuccessful Calls'],
+                    },
+                    yaxis: {
+                        title: {
+                            text: 'Number of Calls'
+                        }
+                    },
+                    fill: {
+                        opacity: 1
+                    },
+                    tooltip: {
+                        y: {
+                            formatter: function (val) {
+                                return val + " calls"
+                            }
+                        }
+                    }
+                };
+
+                var chart = new ApexCharts(document.querySelector("#chart-visitors-profile"), options);
+                chart.render();
+            })
+            .catch(err => console.error(err));
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Form Layout - Mazer Admin Dashboard</title>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/bootstrap.css" />
+
+    <link
+      rel="stylesheet"
+      href="assets/vendors/perfect-scrollbar/perfect-scrollbar.css"
+    />
+    <link
+      rel="stylesheet"
+      href="assets/vendors/bootstrap-icons/bootstrap-icons.css"
+    />
+    <link rel="stylesheet" href="assets/css/app.css" />
+    <link
+      rel="shortcut icon"
+      href="assets/images/favicon.svg"
+      type="image/x-icon"
+    />
+  </head>
+
+  <body>
+    <div id="app">
+      <div id="sidebar" class="active">
+        <div class="sidebar-wrapper active">
+          <div class="sidebar-header">
+            <div class="d-flex justify-content-between">
+              <div class="logo">
+                <a href="index.html"
+                  ><img src="assets/images/logo/logo.png" alt="Logo" srcset=""
+                /></a>
+              </div>
+              <div class="toggler">
+                <a href="#" class="sidebar-hide d-xl-none d-block"
+                  ><i class="bi bi-x bi-middle"></i
+                ></a>
+              </div>
+            </div>
+          </div>
+          <div class="sidebar-menu">
+            <ul class="menu">
+              <li class="sidebar-title">Menu</li>
+
+              <li class="sidebar-item">
+                <a href="index.html" class="sidebar-link">
+                  <i class="bi bi-grid-fill"></i>
+                  <span>Dashboard</span>
+                </a>
+              </li>
+              <li class="sidebar-item">
+                <a href="single-call.html" class="sidebar-link">
+                  <i class="bi bi-file-earmark-medical-fill"></i>
+                  <span>Single Call</span>
+                </a>
+              </li>
+              <li class="sidebar-item active">
+                <a href="bulk-call.html" class="sidebar-link">
+                  <i class="bi bi-stack"></i>
+                  <span>Bulk Call</span>
+                </a>
+              </li>
+
+              <li class="sidebar-item">
+                <a href="call-logs.html" class="sidebar-link">
+                  <i class="bi bi-journal-text"></i>
+                  <span>Call Logs</span>
+                </a>
+              </li>
+
+              <li class="sidebar-item">
+                <a href="sms-email.html" class="sidebar-link">
+                  <i class="bi bi-envelope-fill"></i>
+                  <span>SMS & Email</span>
+                </a>
+              </li>
+
+              <li class="sidebar-item">
+                <a href="appointment.html" class="sidebar-link">
+                  <i class="bi bi-calendar-check-fill"></i>
+                  <span>Appointment</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div id="main">
+        <header class="mb-3">
+          <a href="#" class="burger-btn d-block d-xl-none">
+            <i class="bi bi-justify fs-3"></i>
+          </a>
+        </header>
+
+        <div class="page-heading">
+          <div class="page-title">
+            <div class="row">
+              <div class="col-12 col-md-6 order-md-1 order-last">
+                <h3>Make Bulk Call</h3>
+              </div>
+              <div class="col-12 col-md-6 order-md-2 order-first">
+                <nav
+                  aria-label="breadcrumb"
+                  class="breadcrumb-header float-start float-lg-end"
+                >
+                  <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                      <a href="index.html">Dashboard</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                      Bulk Call
+                    </li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </div>
+
+          <!-- Basic Horizontal form layout section start -->
+          <!-- Bulk Call Form -->
+          <section id="bulk-horizontal-layouts" class="container mt-5">
+            <div class="row justify-content-center">
+              <div class="col-md-15">
+                <div class="card">
+                  <div class="card-content">
+                    <div class="card-body">
+                      <form class="form form-horizontal" id="bulk-call-form">
+                        <div class="form-body">
+                          <div class="row">
+                            <div class="col-md-4">
+                              <label>CSV File Upload</label>
+                            </div>
+                            <div class="col-md-8 form-group">
+                              <input
+                                type="file"
+                                id="csv-upload"
+                                class="form-control"
+                                name="file"
+                                accept=".csv"
+                              />
+                            </div>
+                            <div class="col-md-4">
+                              <label>Prompt</label>
+                            </div>
+                            <div class="col-md-8 form-group">
+                              <textarea
+                                class="form-control"
+                                id="prompt"
+                                rows="3"
+                              ></textarea>
+                            </div>
+                            <div class="col-sm-12 d-flex justify-content-end">
+                              <button
+                                type="button"
+                                onclick="processBulkCalls()"
+                                class="btn btn-primary me-1 mb-1"
+                              >
+                                Submit
+                              </button>
+                              <button
+                                type="reset"
+                                class="btn btn-light-secondary me-1 mb-1"
+                              >
+                                Reset
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+                <div id="call-results"></div>
+                <!-- Display call results here -->
+              </div>
+            </div>
+          </section>
+          <!-- // Basic Horizontal form layout section end -->
+        </div>
+      </div>
+    </div>
+    <script src="assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <script src="assets/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/main.js"></script>
+
+    <!-- Ensure JavaScript containing processBulkCalls function loads properly -->
+    <script>
+      function processBulkCalls() {
+        const fileInput = document.getElementById("csv-upload");
+        const promptText = document.getElementById("prompt").value;
+
+        if (fileInput.files.length == 0) {
+          alert("Please upload a CSV file.");
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const text = e.target.result;
+          const data = csvToArray(text);
+          initiateCalls(data, promptText);
+        };
+        reader.readAsText(fileInput.files[0]);
+      }
+
+      function csvToArray(str, delimiter = ",") {
+        const headers = str.slice(0, str.indexOf("\n")).split(delimiter);
+        const rows = str.slice(str.indexOf("\n") + 1).split("\n");
+        const arr = rows.map(function (row) {
+          const values = row.split(delimiter);
+          const el = headers.reduce(function (object, header, index) {
+            object[header] = values[index];
+            return object;
+          }, {});
+          return el;
+        });
+        return arr;
+      }
+      function initiateCalls(users, prompt) {
+    users.forEach((user) => {
+        const nameKey = Object.keys(user).find(
+            (key) => key.trim().toLowerCase() === "name"
+        );
+        const phoneNumberKey = Object.keys(user).find(
+            (key) => key.trim().toLowerCase() === "phone number"
+        );
+
+        const name = user[nameKey];
+        const phoneNumber = user[phoneNumberKey];
+        const formattedPhoneNumber = `+${phoneNumber.replace(/\D/g, "")}`;
+
+        const callOptions = {
+            method: "POST",
+            headers: {
+                Authorization: "22576079-730d-4707-b8ab-f780113249f3",
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                name: `Bulk call to ${name}`,
+                phoneNumberId: "d51cf9b6-a9de-4e9d-acf7-734ea03a8eac",
+                customer: {
+                    number: formattedPhoneNumber,
+                },
+                assistant: {
+                    transcriber: {
+                        provider: "deepgram",
+                        model: "nova-2",
+                        language: "en-US",
+                        smartFormat: false,
+                    },
+                    model: {
+                        provider: "openai",
+                        model: "gpt-4",
+                        messages: [
+                            {
+                                role: "system",
+                                content: prompt,
+                            },
+                        ],
+                    },
+                },
+            }),
+        };
+
+        fetch("https://api.vapi.ai/call", callOptions)
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(`Call to ${name} initiated:`, data);
+                const callSid = data.id; // Assuming 'id' is the unique identifier for the call
+                updateCallResults(
+                    name,
+                    formattedPhoneNumber,
+                    "Call initiated successfully"
+                );
+                // Start polling for call status
+                pollCallStatus(callSid, name, formattedPhoneNumber);
+            })
+            .catch((error) => {
+                console.error("Error initiating call to", name, ":", error);
+                updateCallResults(
+                    name,
+                    formattedPhoneNumber,
+                    "Failed to initiate call"
+                );
+            });
+    });
+}
+function pollCallStatus(callSid, name, phoneNumber) {
+    const pollInterval = 30000; // 30 seconds
+    const maxRetries = 20; // Maximum number of retries
+
+    function checkStatus(retries) {
+        fetch(`https://api.vapi.ai/call/${callSid}`, {
+            method: "GET",
+            headers: {
+                Authorization: "Bearer 22576079-730d-4707-b8ab-f780113249f3",
+            },
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            console.log(`Status for call ${callSid}:`, data);
+            const status = data.status; // Call status
+            const endedReason = data.endedReason; // Reason why call ended
+
+            if (status === 'ended') {
+                // Send SMS only if call has ended
+                sendSMS(name, phoneNumber, endedReason);
+                sendEmail("madhavbansal356@gmail.com", "Testing", "Hi, This mail is for testing purpose")
+            } else if (retries < maxRetries) {
+                setTimeout(() => checkStatus(retries + 1), pollInterval);
+            } else {
+                console.log(`Call ${callSid} did not complete in time.`);
+            }
+        })
+        .catch((error) => {
+            console.error("Error checking call status:", error);
+            if (retries < maxRetries) {
+                setTimeout(() => checkStatus(retries + 1), pollInterval);
+            }
+        });
+    }
+
+    checkStatus(0);
+}
+
+
+function sendSMS(name, phoneNumber, endedReason) {
+    fetch("http://localhost:3000/send-sms", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            toNumber: phoneNumber,
+            message: `Hello ${name}, your call has ended. Reason: ${endedReason}.`,
+        }),
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        console.log(`SMS sent successfully:`, data);
+    })
+    .catch((error) => {
+        console.error("Error sending SMS:", error);
+    });
+}
+
+
+      function updateCallResults(name, phoneNumber, status) {
+        const resultsDiv = document.getElementById("call-results");
+        const result = document.createElement("div");
+        result.innerHTML = `Call to ${name} (${phoneNumber}): ${status}`;
+        resultsDiv.appendChild(result);
+      }
+    </script>
+  </body>
+</html>
