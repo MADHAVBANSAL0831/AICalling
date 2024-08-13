@@ -278,25 +278,28 @@
         const options = {
             method: 'GET',
             headers: {
-                Authorization: 'Bearer 9f9ef4ba-5978-456f-a9b5-26bdde7d1ea2'
+                Authorization: 'Bearer 22576079-730d-4707-b8ab-f780113249f3'
             }
         };
-    
+        
         function updateCallLogs() {
             fetch('https://api.vapi.ai/call', options)
                 .then(response => response.json())
                 .then(data => {
                     const tableBody = document.querySelector('#latest-calls-table');
                     const totalCalls = document.querySelector('#totalCalls');
-    
+        
                     // Clear previous entries
                     tableBody.innerHTML = '';
-                    
+        
                     // Update total calls
-                    totalCalls.textContent = data.length;  // Display the number of calls
-    
-                    // Update table with the latest calls
-                    const latestCalls = data.slice(0, 7); // Get only the latest 7 calls
+                    totalCalls.textContent = data.length;
+        
+                    // Sort the data by createdAt in descending order
+                    data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        
+                    // Update table with the latest 7 calls
+                    const latestCalls = data.slice(0, 7);
                     latestCalls.forEach(call => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
@@ -306,22 +309,25 @@
                                 </div>
                             </td>
                             <td class="col-auto">
-                                <p class=" mb-0">${new Date(call.endedAt).toLocaleString()}</p>
+                                <p class="mb-0">${new Date(call.endedAt).toLocaleString()}</p>
                             </td>
                             <td class="col-auto">
-                                <p class=" mb-0">${call.phoneCallProvider}</p>
+                                <p class="mb-0">${call.status}</p>
                             </td>
                             <td class="col-auto">
-                                <p class=" mb-0">${call.status}</p>
+                                <p class="mb-0">${call.customer?.number || 'N/A'}</p>
                             </td>
                         `;
                         tableBody.appendChild(row);
                     });
                 })
-                .catch(err => console.error(err));
+                .catch(err => console.error('Error fetching call logs:', err));
         }
-    
-        updateCallLogs();  // Call this function on page load to fetch and display call data
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCallLogs();  // Initial call
+            setInterval(updateCallLogs, 60000); // Refresh call logs every 60 seconds
+        });
     </script>
 </body>
 

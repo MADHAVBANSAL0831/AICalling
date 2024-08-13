@@ -112,13 +112,10 @@
                             <tr>
                                 <th>Created At</th>
                                 <th>Ended At</th>
-                                <th>Transcript</th>
-                                <th>Summary</th> 
                                 <th>Status</th>
-                                <th>Org ID</th>
-                                <th>Customer Number</th> <!-- New column added -->
-                                
-
+                                <th>Customer Number</th>
+                                <th>Transcript</th>
+                                <th>Summary</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -150,65 +147,76 @@
             }
         };
 
-        fetch('https://api.vapi.ai/call', options)
-            .then(response => response.json())
-            .then(data => {
-                const tableBody = document.querySelector('#call-logs-table tbody');
-                data.forEach(call => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${new Date(call.createdAt).toLocaleString()}</td>
-                        <td>${new Date(call.endedAt).toLocaleString()}</td>
-                        <td>
-                            <button class="btn btn-primary btn-sm show-transcript" data-transcript="${call.transcript || 'N/A'}">
-                                Show Transcript
-                            </button>
-                        </td>
-                        <td>
-                            <button class="btn btn-info btn-sm show-summary" data-summary="${call.analysis?.summary || 'N/A'}">
-                                Show Summary
-                            </button>
-                        </td>
-                        <td>${call.status}</td>
-                        <td>${call.orgId}</td>
-                        <td>${call.customer?.number || 'N/A'}</td> <!-- Fetching customer number -->
-                    `;
-                    tableBody.appendChild(row);
-                });
-
-                // Add event listeners to buttons
-                const modal = document.getElementById("myModal");
-                const modalTitle = document.getElementById("modalTitle");
-                const modalContent = document.getElementById("modalContent");
-                const span = document.getElementsByClassName("close")[0];
-
-                document.querySelectorAll('.show-transcript').forEach(button => {
-                    button.addEventListener('click', function() {
-                        modalTitle.textContent = "Transcript";
-                        modalContent.textContent = this.getAttribute('data-transcript');
-                        modal.style.display = "block";
+        function updateCallLogs() {
+            fetch('https://api.vapi.ai/call', options)
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.querySelector('#call-logs-table tbody');
+                    tableBody.innerHTML = ''; // Clear existing rows
+                    data.forEach(call => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${new Date(call.createdAt).toLocaleString()}</td>
+                            <td>${new Date(call.endedAt).toLocaleString()}</td>
+                            <td>${call.status}</td>
+                            <td>${call.customer?.number || 'N/A'}</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm show-transcript" data-transcript="${call.transcript || 'N/A'}">
+                                    Show Transcript
+                                </button>
+                            </td>
+                            <td>
+                                <button class="btn btn-info btn-sm show-summary" data-summary="${call.analysis?.summary || 'N/A'}">
+                                    Show Summary
+                                </button>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
                     });
-                });
+                    
+                    // Re-add event listeners for the modal
+                    addModalEventListeners();
+                })
+                .catch(err => console.error(err));
+        }
 
-                document.querySelectorAll('.show-summary').forEach(button => {
-                    button.addEventListener('click', function() {
-                        modalTitle.textContent = "Summary";
-                        modalContent.textContent = this.getAttribute('data-summary');
-                        modal.style.display = "block";
-                    });
-                });
+        // Function to add event listeners for the modal
+        function addModalEventListeners() {
+            const modal = document.getElementById("myModal");
+            const modalTitle = document.getElementById("modalTitle");
+            const modalContent = document.getElementById("modalContent");
+            const span = document.getElementsByClassName("close")[0];
 
-                span.onclick = function() {
+            document.querySelectorAll('.show-transcript').forEach(button => {
+                button.addEventListener('click', function() {
+                    modalTitle.textContent = "Transcript";
+                    modalContent.textContent = this.getAttribute('data-transcript');
+                    modal.style.display = "block";
+                });
+            });
+
+            document.querySelectorAll('.show-summary').forEach(button => {
+                button.addEventListener('click', function() {
+                    modalTitle.textContent = "Summary";
+                    modalContent.textContent = this.getAttribute('data-summary');
+                    modal.style.display = "block";
+                });
+            });
+
+            span.onclick = function() {
+                modal.style.display = "none";
+            }
+
+            window.onclick = function(event) {
+                if (event.target == modal) {
                     modal.style.display = "none";
                 }
+            }
+        }
 
-                window.onclick = function(event) {
-                    if (event.target == modal) {
-                        modal.style.display = "none";
-                    }
-                }
-            })
-            .catch(err => console.error(err));
+        // Update call logs initially and then every 60 seconds
+        updateCallLogs();
+        setInterval(updateCallLogs, 60000);
     </script>
 </body>
 
