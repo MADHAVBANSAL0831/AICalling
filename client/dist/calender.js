@@ -115,6 +115,38 @@ app.get('/events', (req, res) => {
     });
 });
 
+// Route to create a new event
+app.post('/events', (req, res) => {
+    const { summary, location, description, startDateTime, endDateTime } = req.body;
+
+    const event = {
+        summary: summary,
+        location: location,
+        description: description,
+        start: {
+            dateTime: startDateTime,
+            timeZone: 'America/Los_Angeles',
+        },
+        end: {
+            dateTime: endDateTime,
+            timeZone: 'America/Los_Angeles',
+        },
+    };
+
+    const calendar = google.calendar({ version: 'v3', auth: oAuth2Client });
+    calendar.events.insert({
+        calendarId: 'primary',
+        resource: event,
+    }, (err, event) => {
+        if (err) {
+            console.log('There was an error contacting the Calendar service: ' + err);
+            return res.status(500).send('There was an error contacting the Calendar service.');
+        }
+        console.log('Event created: %s', event.data.htmlLink);
+        res.status(200).send('Event created successfully');
+    });
+});
+
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
