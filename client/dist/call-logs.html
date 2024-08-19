@@ -158,14 +158,50 @@
             const data = await response.json();
             return data;
         }
-            async function updateCallLogs() {
-                try {
-                    const response = await fetch('/api/calls');
-                    const data = await response.json();
+            // async function updateCallLogs() {
+            //     try {
+            //         const response = await fetch('/api/calls');
+            //         const data = await response.json();
+            //         const tableBody = document.querySelector('#call-logs-table tbody');
+            //         tableBody.innerHTML = ''; // Clear existing rows
+                    
+            //         for (const call of data) {
+            //             const row = document.createElement('tr');
+            //             row.innerHTML = `
+            //                 <td>${new Date(call.createdAt).toLocaleString()}</td>
+            //                 <td>${new Date(call.endedAt).toLocaleString()}</td>
+            //                 <td>${call.status}</td>
+            //                 <td>${call.customer?.number || 'N/A'}</td>
+            //                 <td>
+            //                     <button class="btn btn-primary btn-sm show-transcript" data-transcript="${call.transcript || 'N/A'}">
+            //                         Show Transcript
+            //                     </button>
+            //                 </td>
+            //                 <td>
+            //                     <button class="btn btn-info btn-sm show-summary" data-summary="${call.analysis?.summary || 'N/A'}">
+            //                         Show Summary
+            //                     </button>
+            //                 </td>
+            //                 <td>${call.extractedInfo?.name || 'N/A'}</td>
+            //                 <td>${call.extractedInfo?.email || 'N/A'}</td>
+            //                 <td>${call.extractedInfo?.phone || 'N/A'}</td>
+            //             `;
+            //             tableBody.appendChild(row);
+            //         }
+                    
+            //         addModalEventListeners();
+            //     } catch (err) {
+            //         console.error(err);
+            //     }
+            // }
+
+            function updateCallLogs() {
+            fetch('https://api.vapi.ai/call', options)
+                .then(response => response.json())
+                .then(data => {
                     const tableBody = document.querySelector('#call-logs-table tbody');
                     tableBody.innerHTML = ''; // Clear existing rows
-                    
-                    for (const call of data) {
+                    data.forEach(call => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
                             <td>${new Date(call.createdAt).toLocaleString()}</td>
@@ -182,19 +218,15 @@
                                     Show Summary
                                 </button>
                             </td>
-                            <td>${call.extractedInfo?.name || 'N/A'}</td>
-                            <td>${call.extractedInfo?.email || 'N/A'}</td>
-                            <td>${call.extractedInfo?.phone || 'N/A'}</td>
                         `;
                         tableBody.appendChild(row);
-                    }
+                    });
                     
+                    // Re-add event listeners for the modal
                     addModalEventListeners();
-                } catch (err) {
-                    console.error(err);
-                }
-            }
-
+                })
+                .catch(err => console.error(err));
+        }
         function addModalEventListeners() {
             const modal = document.getElementById("myModal");
             const modalTitle = document.getElementById("modalTitle");

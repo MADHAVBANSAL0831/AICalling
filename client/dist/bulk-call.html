@@ -313,7 +313,8 @@ function pollCallStatus(callSid, name, phoneNumber) {
             if (status === 'ended') {
                 // Send SMS only if call has ended
                 sendSMS(name, phoneNumber, endedReason);
-                sendEmail("madhavbansal356@gmail.com", "Testing", "Hi, This mail is for testing purpose")
+                scheduleAppointment();
+                // sendEmail("madhavbansal356@gmail.com", "Testing", "Hi, This mail is for testing purpose")
             } else if (retries < maxRetries) {
                 setTimeout(() => checkStatus(retries + 1), pollInterval);
             } else {
@@ -333,24 +334,31 @@ function pollCallStatus(callSid, name, phoneNumber) {
 
 
 function sendSMS(name, phoneNumber, endedReason) {
-    fetch("http://localhost:3000/send-sms", {
+      const message = `Hello ${name}, Thank you for your time. We will schedule a meeting with you and provide you with an update soon. Reason for ending: ${endedReason || "Not provided"}.`;
+
+      fetch("http://localhost:3000/api/messages/send-sms", {  // Adjusted the endpoint to match the route path
         method: "POST",
         headers: {
-            "Content-Type": "application/json",
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            toNumber: phoneNumber,
-            message: `Hello ${name}, your call has ended. Reason: ${endedReason}.`,
+          toNumber: phoneNumber,
+          message: message,
         }),
-    })
-    .then((response) => response.json())
-    .then((data) => {
-        console.log(`SMS sent successfully:`, data);
-    })
-    .catch((error) => {
-        console.error("Error sending SMS:", error);
-    });
-}
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Failed to send SMS: ${response.statusText}`);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log("SMS sent successfully:", data);
+        })
+        .catch((error) => {
+          console.error("Error sending SMS:", error.message);
+        });
+    }
 
 
       function updateCallResults(name, phoneNumber, status) {
@@ -359,6 +367,135 @@ function sendSMS(name, phoneNumber, endedReason) {
         result.innerHTML = `Call to ${name} (${phoneNumber}): ${status}`;
         resultsDiv.appendChild(result);
       }
+
+      async function getTranscript() {
+    try {
+        const response = await fetch('https://api.vapi.ai/call', options);
+        const data = await response.json();
+
+        if (data.length > 0) {
+            // Find the call with the most recent 'updatedAt' timestamp
+            const latestCall = data.reduce((latest, call) => {
+                return new Date(call.updatedAt) > new Date(latest.updatedAt) ? call : latest;
+            });
+
+            const latestTranscript = latestCall.transcript;
+
+            // Print the latest transcript
+            console.log("Transcript:", latestTranscript);
+
+            return latestTranscript;
+        } else {
+            console.log('No transcripts available.');
+            return null;
+        }
+    } catch (err) {
+        console.error(err);
+        return null;
+    }
+}
+
+async function scheduleAppointment() {
+    const demoTranscript = await getTranscript(); // Wait for the transcript to be fetched
+
+    if (!demoTranscript) {
+        console.error('Failed to retrieve transcript.');
+        return;
+    }
+
+    console.log("Latest Transcript:", demoTranscript);
+
+    // First, make a POST request to the `/api/demo-transcript` endpoint
+    fetch('http://localhost:3000/api/demo-transcript', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ transcript: demoTranscript }),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok ' + response.statusText);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Success:', data);
+
+        // Extract variables from the response
+        const { name, email, phone, date, time } = data;
+
+        // Log extracted fields to check if they are correct
+        console.log("Extracted Info:", { name, email, phone, date, time });
+
+        // Convert the date and time into ISO format
+        let appointmentDateTime;
+        try {
+            // Check if date and time are valid
+            if (date && time) {
+                // Convert date format if necessary
+                const formattedDate = date.replace(/(\d{4})\/(\d{2})\/(\d{2})/, '$1-$2-$3');
+                appointmentDateTime = new Date(`${formattedDate}T${time}:00`);
+
+                // Check if the date is valid
+                if (isNaN(appointmentDateTime.getTime())) {
+                    throw new Error('Invalid date/time value');
+                }
+            } else {
+                throw new Error('Date or time missing');
+            }
+        } catch (error) {
+            console.error('Error with date/time conversion:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid Date/Time',
+                text: 'The provided date or time is invalid. Please check the format.',
+            });
+            return;
+        }
+
+        // Prepare event data using the extracted information
+        const eventData = {
+            summary: `Meeting with ${name}`,
+            location: "123 Main St, Anytown, USA",
+            description: `Appointment with ${name}. Contact: ${phone}. Email: ${email}`,
+            startDateTime: appointmentDateTime.toISOString(),
+            endDateTime: new Date(appointmentDateTime.getTime() + 60 * 60 * 1000).toISOString(), // 1 hour duration
+        };
+
+        // Send event data to your event scheduling endpoint
+        return fetch("http://localhost:3000/calendar/events", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(eventData),
+        });
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok ' + response.statusText);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log("Event created successfully:", data);
+        Swal.fire({
+            icon: "success",
+            title: "Appointment Scheduled",
+            text: "The appointment was scheduled successfully.",
+        });
+    })
+    .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+        Swal.fire({
+            icon: "error",
+            title: "Failed to Schedule Appointment",
+            text: "An error occurred while scheduling the appointment. Please try again.",
+        });
+    });
+}
+
     </script>
   </body>
 </html>

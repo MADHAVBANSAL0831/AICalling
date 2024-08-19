@@ -13,10 +13,10 @@ exports.processTranscript = async (transcript) => {
         ],
     });
 
-    console.log('OpenAI response:', response);
+    // console.log('OpenAI response:', response);
 
     const responseContent = response.choices[0].message.content;
-    console.log('Response Content:', responseContent);
+    // console.log('Response Content:', responseContent);
 
     let extractedInfo = {};
 
@@ -53,7 +53,7 @@ exports.processTranscript = async (transcript) => {
         };
     }
 
-    console.log('Extracted info from OpenAI:', extractedInfo);
+    // console.log('Extracted info from OpenAI:', extractedInfo);
     return extractedInfo;
 };
 

@@ -15,7 +15,8 @@
     "express": "^4.19.2",
     "mongoose": "^5.13.22",
     "openai": "^4.55.7",
-    "serverr": "^1.0.0"
+    "serverr": "^1.0.0",
+    "twilio": "^5.2.2"
   },
   "keywords": []
 }
