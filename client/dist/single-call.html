@@ -418,6 +418,7 @@ async function getTranscript() {
 
 async function scheduleAppointment() {
     const demoTranscript = await getTranscript(); // Wait for the transcript to be fetched
+    // const demoTranscript = "Hello, my name is lous, my email is lous@gmail.com, my phone number is 7206534017, schedule a meeting on 24 aug at 5pm to 6pm";
 
     if (!demoTranscript) {
         console.error('Failed to retrieve transcript.');

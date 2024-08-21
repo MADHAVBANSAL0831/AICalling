@@ -6,6 +6,9 @@ const cors = require('cors');
 const apiRoutes = require('./routes/api');
 const sendMessageRoutes = require('./routes/send-message');
 const googleCalendar = require('./routes/calendar');
+// const extractedInfo = require('./routes/extractInfo');
+const callLogsRoutes = require('./routes/callLogs'); // Add this line
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -24,6 +27,7 @@ app.use(cors());
 app.use('/api', apiRoutes);
 app.use('/api/messages', sendMessageRoutes); // Changed base path to avoid conflicts
 app.use('/calendar', googleCalendar);
+app.use('/imf', callLogsRoutes); // Add this line
 
 // Error handling middleware
 app.use((err, req, res, next) => {

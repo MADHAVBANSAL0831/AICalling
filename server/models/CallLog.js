@@ -1,16 +1,14 @@
 const mongoose = require('mongoose');
 
-const CallLogSchema = new mongoose.Schema({
+const callLogSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now },
-    endedAt: Date,
-    status: String,
-    customerNumber: String,
-    transcript: String,
-    extractedInfo: {
-        name: String,
-        email: String,
-        phone: String
-    }
+    endedAt: { type: Date },
+    status: { type: String, required: true },
+    customerNumber: { type: String },
+    transcript: { type: String, required: true },
+    extractedInfo: { type: mongoose.Schema.Types.Mixed, required: true } // Using Mixed to store dynamic data
 });
 
-module.exports = mongoose.model('CallLog', CallLogSchema, 'userinfo');
+const CallLog = mongoose.model('CallLog', callLogSchema);
+
+module.exports = CallLog;
