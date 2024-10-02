@@ -9,14 +9,18 @@
   "author": "Your Name",
   "license": "ISC",
   "dependencies": {
-    "axios": "^1.7.4",
+    "axios": "^1.7.7",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
     "date-fns": "^3.6.0",
     "dotenv": "^16.4.5",
-    "express": "^4.19.2",
+    "express": "^4.21.0",
+    "googleapis": "^144.0.0",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^5.13.22",
-    "openai": "^4.55.7",
+    "openai": "^4.67.0",
     "serverr": "^1.0.0",
-    "twilio": "^5.2.2"
+    "twilio": "^5.3.2"
   },
   "keywords": []
 }

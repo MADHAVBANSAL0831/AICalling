@@ -24,13 +24,11 @@
         }
     
         .iframe-container {
-            /* border: 2px solid #007bff; */
             border-radius: 0.75rem;
             padding: 1.5rem;
-            /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
+           
             background-color: #2450c1dd;
-            /* max-width: 100%; */
-            /* overflow: hidden; */
+           
         }
     
         iframe {
@@ -58,7 +56,9 @@
                         </div>
                     </div>
                 </div>
+                
                 <div class="sidebar-menu">
+                    
                     <ul class="menu">
                         <li class="sidebar-title">Menu</li>
 
@@ -115,5 +115,48 @@
         
     </div>
 </body>
+
+<script>
+
+async function validateToken() {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          // If no token, redirect to login page
+          window.location.href = "login.html";
+          return;
+        }
+
+        try {
+          const response = await fetch(
+            "http://localhost:3000/api/auth/validate",
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error("Token validation failed");
+          }
+
+          const data = await response.json();
+          if (!data.valid) {
+            // If token is not valid, redirect to login page
+            window.location.href = "login.html";
+          }
+        } catch (error) {
+          console.error("Error validating token:", error);
+          // Redirect to login if there's an error
+          window.location.href = "login.html";
+        }
+      }
+
+      // Call the validateToken function when the page loads
+      window.onload = validateToken;
+</script>
 
 </html>
